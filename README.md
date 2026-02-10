@@ -177,6 +177,132 @@ Upon activation, histogram equalization is applied to the currently loaded image
 
 `outputs/lena_EH.png`
 
+### Linear convolution (5×5 smoothing filter)
+
+This method applies a fixed 5×5 convolution kernel to the image.  
+In practice, the chosen kernel behaves as a low-pass (smoothing) filter and reduces high-frequency noise and fine details.
+
+#### Description
+
+Linear convolution computes each output pixel as a weighted sum of its neighborhood using a predefined mask (kernel).  
+Because the kernel weights are all non-negative and concentrated around the center, the operation performs spatial averaging and therefore produces a blurred / smoothed image.
+
+#### Numerical principle
+
+Let u(x, y) denote the normalized grayscale intensity at pixel location (x, y) in the interval [0, 1].  
+Let w(i, j) be a 5×5 kernel with radius d = 2.
+
+The convolution output is computed as:
+
+    u_tilde(x, y) = sum_{i=-d}^{d} sum_{j=-d}^{d} w(i, j) · u(x + i, y + j)
+
+To avoid boundary artifacts, the image is first extended using mirror padding (reflection at borders).  
+After the convolution, values are clamped to [0, 1] to keep the output valid for grayscale visualization.
+
+#### Implementation
+
+- The input image is mirror-extended by d = 2 pixels on each side.
+- The image is converted into a normalized double grid (values in [0, 1]).
+- A fixed 5×5 kernel is applied at every pixel location.
+- The result is converted back to an 8-bit grayscale QImage.
+
+The current implementation uses a symmetric kernel with strong center weight, which effectively acts as a Gaussian-like smoothing filter.
+
+#### User interaction
+
+The operation is triggered via a dedicated button in the graphical user interface.  
+Upon activation, linear convolution is applied to the currently loaded image and the result is displayed.
+
+#### Example output
+
+`outputs/lena_lin_con_1.png`
+`outputs/lena_lin_con_3.png`
+`outputs/lena_lin_con_5.png`
+`outputs/lena_lin_con_10.png`
+`noise_test_image_lin_con_40.png`
+
+### Heat equation diffusion (explicit vs implicit scheme)
+
+This method applies isotropic diffusion based on the 2D heat equation.  
+In image processing, heat diffusion acts as a **smoothing (blurring) operator**: it reduces noise and high-frequency variations by averaging neighboring pixel values, while preserving large-scale image structures.
+
+The user selects the time step size tau and the number of time steps T.  
+Depending on the value of tau, the method uses either an explicit or an implicit time-stepping scheme.
+
+#### Description
+
+A grayscale image is treated as a discrete scalar field u(x, y) on a 2D grid.  
+Diffusion is performed using a 5-point stencil (4-neighborhood), which corresponds to the discrete Laplacian operator.
+
+As diffusion progresses in time, sharp intensity variations are smoothed out, resulting in an increasingly blurred image.
+
+For stability reasons, the implementation selects:
+- explicit scheme for tau <= 0.25
+- implicit scheme for tau > 0.25
+
+Mirror padding (reflection at borders) is used to handle boundary conditions and avoid edge artifacts.
+
+#### Numerical principle
+
+Let u^n(x, y) be the image at time step n and tau be the time step size.
+
+The discrete Laplacian using the 4-neighborhood is:
+
+    Δu(x, y) = u(x+1, y) + u(x-1, y) + u(x, y+1) + u(x, y-1) - 4u(x, y)
+
+Explicit (forward Euler) update:
+
+    u^{n+1}(x, y) = u^n(x, y) + tau · Δu^n(x, y)
+
+which can be written as:
+
+    u^{n+1}(x, y) = (1 - 4tau) u^n(x, y) + tau · (u^n_up + u^n_down + u^n_left + u^n_right)
+
+Stability note (2D, 5-point stencil):
+- the explicit scheme requires tau <= 0.25 for stable diffusion
+
+Implicit (backward Euler) update:
+
+    u^{n+1}(x, y) = u^n(x, y) + tau · Δu^{n+1}(x, y)
+
+which leads to a linear system for u^{n+1} at each time step:
+
+    (1 + 4tau) u^{n+1}(x, y) - tau · (u^{n+1}_up + u^{n+1}_down + u^{n+1}_left + u^{n+1}_right) = u^n(x, y)
+
+#### Implementation
+
+Explicit scheme:
+- Uses mirror padding with radius d = 1.
+- Computes each new pixel value from the 4-neighborhood using the explicit update formula.
+- Repeats the update for T time steps.
+- As time progresses, the image becomes progressively smoother (more blurred).
+
+Implicit scheme:
+- Uses an iterative solver (SOR-like relaxation) to compute u^{n+1} from the implicit linear system.
+- Parameters used in the implementation:
+  - maxIter = 100
+  - omega (relaxation factor) = 1.25
+  - tolerance tol = 1e-5
+- At each time step, the method iterates until the residual norm drops below the tolerance (or max iterations are reached).
+
+Diagnostics:
+- The implementation prints the mean intensity before and after each time step.
+- For the implicit scheme, it also logs the number of SOR iterations and the residual norm.
+
+#### User interaction
+
+The operation is triggered via a dedicated button in the graphical user interface.  
+The user sets:
+- tau (time step size)
+- T (number of time steps)
+
+The program automatically selects explicit vs implicit scheme based on tau and displays the processed image.
+
+#### Example output
+
+`outputs/lena_heat_explicit_tau0.2_T20.png`  
+`outputs/lena_heat_implicit_tau0.5_T20.png`
+
 ## 5. Code structure
 
 The project is structured to separate **numerical image processing logic** from **visualization and user interface components**.
