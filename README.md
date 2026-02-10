@@ -91,6 +91,55 @@ Upon activation, the current image is processed using the FSHS method and immedi
 
 `outputs/lena_fshs.png`
 
+### Histogram Equalization (EH)
+
+Histogram equalization is a global contrast enhancement technique that redistributes grayscale intensity values based on their cumulative distribution in the image.
+
+Unlike simple linear rescaling, this method uses the statistical distribution of intensities to achieve a more uniform histogram.
+
+#### Description
+
+In this method, the grayscale image is transformed using the cumulative distribution function (CDF) of its intensity histogram.  
+The goal is to spread frequently occurring intensity values over a wider range, improving visibility of details in low-contrast regions.
+
+The relative ordering of pixel intensities is preserved, but the spacing between intensity levels is nonlinearly modified.
+
+#### Numerical principle
+
+Let u(x, y) denote the grayscale intensity at pixel location (x, y), with values in {0, …, 255}.
+
+First, the histogram of intensity values is computed and used to construct the cumulative distribution function (CDF):
+
+    cdf(i) = (1 / (W · H)) · sum_{j=0}^{i} hist(j)
+
+where:
+- W · H is the total number of pixels,
+- hist(i) is the number of pixels with intensity i.
+
+Each pixel value is then remapped using the normalized CDF:
+
+    u_tilde(x, y) = 255 · cdf(u(x, y))
+
+This nonlinear transformation redistributes intensity values so that the resulting histogram is approximately uniform.
+
+#### Implementation
+
+A histogram with 256 bins is constructed from the input image.  
+The cumulative distribution function is computed and normalized by the total number of pixels.
+
+Each pixel intensity is then replaced by its CDF-based value scaled to the full grayscale range [0, 255].
+
+The method operates on grayscale images and does not introduce any spatial smoothing.
+
+#### User interaction
+
+The operation is triggered via a dedicated button in the graphical user interface.  
+Upon activation, histogram equalization is applied to the currently loaded image and the result is displayed.
+
+#### Example output
+
+`outputs/lena_EH.png`
+
 ## 5. Code structure
 
 The project is structured to separate **numerical image processing logic** from **visualization and user interface components**.
