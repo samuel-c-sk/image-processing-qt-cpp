@@ -708,6 +708,50 @@ Note: In the current implementation, K is passed as a parameter but not used ins
 
 `outputs/blurred_test_image_RT.png`
 
+## 4. Implemented methods
+
+This project implements a collection of classical and advanced **numerical methods for image processing**, primarily based on **partial differential equations (PDEs)** and variational principles.
+
+The focus is on understanding the numerical behavior of individual schemes rather than on UI design or visual styling.
+
+### Intensity-based methods
+- **Full-Strength Histogram Stretching (FSHS)**  
+  Linear rescaling of grayscale intensities to utilize the full available dynamic range.
+
+- **Histogram Equalization (EH)**  
+  Redistribution of intensity values based on the cumulative distribution function to enhance global contrast.
+
+### Linear filtering
+- **Linear convolution with Gaussian-like kernel**  
+  Image smoothing using a fixed convolution mask, serving as a baseline linear diffusion method.
+
+### Diffusion-based methods
+- **Heat equation (explicit and implicit schemes)**  
+  Numerical solution of the heat equation for image smoothing:
+  - Explicit finite difference scheme (conditionally stable),
+  - Implicit scheme solved using iterative SOR.
+
+- **Mean Curvature Flow (MCF)**  
+  Curvature-driven diffusion that smooths images while preserving geometric structures.
+
+- **Gradient Mean Curvature Flow (GMCF)**  
+  Extension of MCF incorporating gradient-based weights for improved edge sensitivity.
+
+### Edge-preserving and nonlinear diffusion
+- **Edge detection via gradient-based diffusivity**  
+  Gradient magnitude estimation in multiple directions used to construct edge indicators.
+
+- **Perona–Malik anisotropic diffusion**  
+  Nonlinear diffusion model that smooths homogeneous regions while preserving and sharpening edges.
+
+### Front propagation / distance-based methods
+- **Rouy–Tourin scheme**  
+  Numerical solution of an Eikonal-type equation for distance propagation, iterated until convergence rather than using a fixed number of time steps.
+
+---
+
+All methods operate on grayscale images and are implemented using explicit numerical formulations to highlight their mathematical structure.
+
 ## 5. Code structure
 
 The project is structured to separate **numerical image processing logic** from **visualization and user interface components**.
