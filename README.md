@@ -14,6 +14,83 @@ They are used as test data for applying and evaluating individual image processi
 
 The images are intended for algorithmic experimentation and demonstration purposes only and do not represent production or application-specific datasets.
 
+## 3. Numerical methods and image processing pipeline
+
+### Image representation and data conversion
+
+Before applying any numerical image processing methods, the input image is converted from a Qt image representation into a numerical form suitable for computation.
+
+Images are treated as **2D scalar fields**, where pixel intensity values represent samples of a continuous function defined on a regular grid.
+
+Two helper functions are used for this purpose:
+
+#### Conversion from QImage to numerical grid
+
+The function `imageToDouble` converts a grayscale `QImage` into a 2D array of double-precision values.
+
+- Each pixel is converted to its grayscale intensity.
+- Pixel values are normalized to the interval **[0, 1]**.
+- The resulting data structure is a `std::vector<std::vector<double>>`, representing a discrete scalar field.
+
+This representation allows direct application of numerical methods such as finite difference schemes, diffusion processes, and gradient-based operators.
+
+#### Conversion from numerical grid back to image
+
+The function `doubleToImage` performs the inverse operation, mapping a 2D array of normalized double values back to a grayscale image.
+
+- Numerical values are rescaled to the interval **[0, 255]**.
+- Values are clamped to avoid overflow or underflow.
+- The output is stored as a `QImage` in 8-bit grayscale format.
+
+This step enables visualization of numerical results and comparison between the original and processed images.
+
+### Notes
+These conversion routines do not modify the image content by themselves.  
+They provide a consistent numerical interface between the image representation and the implemented image processing methods.
+
+### Full-Strength Histogram Stretching (FSHS)
+
+Full-strength histogram stretching is a basic intensity normalization technique used to improve image contrast by expanding the range of grayscale values.
+
+#### Description
+
+In this method, the grayscale image is rescaled such that the minimum intensity value present in the image is mapped to 0, and the maximum intensity value is mapped to 1.  
+All intermediate pixel values are linearly transformed accordingly.
+
+This operation enhances contrast by utilizing the full available intensity range without altering the relative ordering of pixel values.
+
+#### Numerical principle
+
+Let \( u(x,y) \) denote the normalized grayscale intensity at pixel location \((x,y)\).  
+The transformed image \( \tilde{u}(x,y) \) is computed as:
+
+\[
+\tilde{u}(x,y) = \frac{u(x,y) - \min(u)}{\max(u) - \min(u)}
+\]
+
+where:
+- \( \min(u) \) is the minimum intensity value in the image,
+- \( \max(u) \) is the maximum intensity value in the image.
+
+This corresponds to an affine transformation of the intensity values.
+
+#### Implementation
+
+The image is first converted into a numerical representation using a normalized double-precision grid.  
+The global minimum and maximum intensity values are determined by scanning the entire image.
+
+Each pixel value is then rescaled using the formula above and converted back to a grayscale image for visualization.
+
+The method does not introduce any smoothing or edge enhancement; it only redistributes intensity values.
+
+#### User interaction
+
+The operation is triggered via a dedicated button in the graphical user interface.  
+Upon activation, the current image is processed using the FSHS method and immediately displayed.
+
+#### Example output
+
+`outputs/lena_fshs.png`
 
 ## 5. Code structure
 
