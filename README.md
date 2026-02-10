@@ -44,7 +44,7 @@ The function `doubleToImage` performs the inverse operation, mapping a 2D array 
 
 This step enables visualization of numerical results and comparison between the original and processed images.
 
-### Notes
+#### Notes
 These conversion routines do not modify the image content by themselves.  
 They provide a consistent numerical interface between the image representation and the implemented image processing methods.
 
@@ -61,16 +61,15 @@ This operation enhances contrast by utilizing the full available intensity range
 
 #### Numerical principle
 
-Let \( u(x,y) \) denote the normalized grayscale intensity at pixel location \((x,y)\).  
-The transformed image \( \tilde{u}(x,y) \) is computed as:
+Let u(x, y) denote the normalized grayscale intensity at pixel location (x, y).
 
-\[
-\tilde{u}(x,y) = \frac{u(x,y) - \min(u)}{\max(u) - \min(u)}
-\]
+The transformed image is computed as:
+
+    u_tilde(x, y) = (u(x, y) - min(u)) / (max(u) - min(u))
 
 where:
-- \( \min(u) \) is the minimum intensity value in the image,
-- \( \max(u) \) is the maximum intensity value in the image.
+- min(u) is the minimum intensity value in the image,
+- max(u) is the maximum intensity value in the image.
 
 This corresponds to an affine transformation of the intensity values.
 
