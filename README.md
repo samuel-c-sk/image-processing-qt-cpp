@@ -219,7 +219,7 @@ Upon activation, linear convolution is applied to the currently loaded image and
 `outputs/lena_lin_con_3.png`
 `outputs/lena_lin_con_5.png`
 `outputs/lena_lin_con_10.png`
-`noise_test_image_lin_con_40.png`
+`output/blurred_test_image_lin_con_40.png`
 
 ### Heat equation diffusion (explicit vs implicit scheme)
 
@@ -302,8 +302,8 @@ The program automatically selects explicit vs implicit scheme based on tau and d
 
 `outputs/lena_HE_explicit_tau0.2_T_10.png`  
 `outputs/lena_HE_implicit_tau0.8_T_10.png`
-`outputs/noise_test_image_HE_implicit_T20_tau0.8.png`
-`outputs/noise_test_image_HE_explicit_T20_tau0.2.png`
+`outputs/blurred_test_image_HE_implicit_T20_tau0.8.png`
+`outputs/blurred_test_image_HE_explicit_T20_tau0.2.png`
 
 ### Edge detection (gradient-based indicator)
 
@@ -454,7 +454,7 @@ The resulting edge-preserving smoothed image is displayed.
 
 #### Example output
 
-`outputs/noise_test_image_PM_tau0.2_sigma0.5.png`
+`outputs/blurred_test_image_PM_tau0.2_sigma0.5.png`
 
 ### Mean Curvature Flow (MCF)
 
@@ -534,7 +534,7 @@ The processed image is displayed after T steps.
 
 #### Example output
 
-`outputs/lnoise_test_image_mcf_T20_tau0.4_eps_0.1.png`
+`outputs/blurred_test_image_mcf_T20_tau0.4_eps_0.1.png`
 
 ### Gradient Mean Curvature Flow (GMCF)
 
@@ -634,7 +634,7 @@ The processed image is displayed after T steps.
 
 #### Example output
 
-`outputs/noise_test_image_gmcf_T20_tau0.4_eps0.1sig_0.1.png`
+`outputs/blurred_test_image_gmcf_T20_tau0.4_eps0.1sig_0.1.png`
 
 ### Rouy–Tourin scheme (distance / level-set style evolution)
 
@@ -706,7 +706,7 @@ Note: In the current implementation, K is passed as a parameter but not used ins
 
 #### Example output
 
-`outputs/noise_test_image_RT.png`
+`outputs/blurred_test_image_RT.png`
 
 ## 5. Code structure
 
