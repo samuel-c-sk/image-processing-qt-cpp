@@ -48,6 +48,43 @@ This step enables visualization of numerical results and comparison between the 
 These conversion routines do not modify the image content by themselves.  
 They provide a consistent numerical interface between the image representation and the implemented image processing methods.
 
+### Boundary handling and image extension
+
+Several numerical image processing methods require access to pixel values outside the original image domain (e.g. diffusion schemes, convolution-based operators).  
+To handle boundary conditions in a consistent way, mirror-based image extension is used.
+
+The following helper functions implement mirror padding and are used internally by multiple processing methods.
+
+#### Mirror padding
+
+Mirror padding extends the image domain by reflecting pixel values across the image boundaries.  
+This approach avoids artificial discontinuities at the borders and provides a smooth continuation of the image intensity field.
+
+The padding width is controlled by the parameter `d`, which specifies the number of pixels added on each side.
+
+#### Numerical principle
+
+Let u(x, y) denote the image intensity defined on a discrete grid.
+
+For pixels outside the original domain, values are obtained by symmetric reflection with respect to the image boundary.  
+This corresponds to enforcing Neumann-type boundary conditions, where the normal derivative at the boundary is approximately zero.
+
+Mirror padding is commonly used in numerical schemes to prevent boundary artifacts and ensure stable behavior of local operators.
+
+#### Implementation
+
+Two overloaded versions of the mirror padding function are implemented:
+
+- A version operating on `QImage`, used for visualization and UI interaction.
+- A version operating on a 2D numerical grid (`std::vector<std::vector<double>>`), used by numerical algorithms.
+
+The implementation performs the following steps:
+- The original image is copied into the center of an extended image domain.
+- Top and bottom boundaries are filled by reflecting pixel values vertically.
+- Left and right boundaries are filled by reflecting pixel values horizontally.
+
+The function does not modify the original image content; it only extends the computational domain to support subsequent numerical operations.
+
 ### Full-Strength Histogram Stretching (FSHS)
 
 Full-strength histogram stretching is a basic intensity normalization technique used to improve image contrast by expanding the range of grayscale values.
